@@ -1,0 +1,22 @@
+{
+  "name": "bentools/natural-cron-expression",
+  "description": "A parser that converts natural language to a cron expression",
+  "minimum-stability": "dev",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Beno!t POLASZEK"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "suggest": {
+    "mtdowling/cron-expression": "Computes previous / next run dates of a cron expression"
+  },
+  "autoload": {
+    "psr-4": {
+      "BenTools\\": "src/BenTools"
+    }
+  }
+}
