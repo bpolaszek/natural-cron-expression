@@ -17,6 +17,8 @@ use BenTools\NaturalCronExpression\ElementProvider\Recurring\EveryWeek;
 use BenTools\NaturalCronExpression\ElementProvider\Recurring\EveryYear;
 
 class NaturalCronExpressionParser {
+    
+    const VALID_PATTERN = '^(@reboot|@yearly|@annually|@monthly|@weekly|@daily|@midnight|@hourly|((?:[1-9]?\d|\*)\s*(?:(?:[\/-][1-9]?\d)|(?:,[1-9]?\d)+)?\s*){5})$';
 
     /**
      * @var ExpressionElementProvider[]
@@ -171,7 +173,7 @@ class NaturalCronExpressionParser {
 
         }
 
-        if ($expression->hasNothing()) {
+        if ($expression->hasNothing() || !preg_match(sprintf('/%s/', static::VALID_PATTERN), (string) $expression)) {
             throw new ParserException(sprintf('Unable to parse "%s"', $string));
         }
 
