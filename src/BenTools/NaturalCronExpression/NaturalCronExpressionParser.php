@@ -56,6 +56,7 @@ class NaturalCronExpressionParser {
             '@annually' => new CronExpression(0, 0, 1, 1, '*'),
             '@monthly'  => new CronExpression(0, 0, 1, '*', '*'),
             '@weekly'   => new CronExpression(0, 0, '*', '*', 0),
+            '@midnight' => new CronExpression(0, 0, '*', '*', '*'),
             '@daily'    => new CronExpression(0, 0, '*', '*', '*'),
             '@hourly'   => new CronExpression(0, '*', '*', '*', '*'),
         ];
@@ -184,6 +185,22 @@ class NaturalCronExpressionParser {
     public static function fromString($string) {
         $parser = new static;
         return (string) $parser->parse($string);
+    }
+
+    /**
+     * @param $string
+     * @return bool
+     */
+    public static function isValid($string) {
+        if ($string === '@reboot') // Can't be parsed, but valid
+            return true;
+        try {
+            static::fromString($string);
+            return true;
+        }
+        catch (ParserException $e) {
+            return false;
+        }
     }
 
 }
