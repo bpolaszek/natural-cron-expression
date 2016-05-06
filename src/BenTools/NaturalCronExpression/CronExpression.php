@@ -11,6 +11,22 @@ class CronExpression {
     public $dayOfWeek;
 
     /**
+     * CronExpression constructor.
+     * @param $minute
+     * @param $hour
+     * @param $dayNumber
+     * @param $month
+     * @param $dayOfWeek
+     */
+    public function __construct($minute = null, $hour = null, $dayNumber = null, $month = null, $dayOfWeek = null) {
+        $this->minute    = $minute;
+        $this->hour      = $hour;
+        $this->dayNumber = $dayNumber;
+        $this->month     = $month;
+        $this->dayOfWeek = $dayOfWeek;
+    }
+
+    /**
      * @return string
      */
     public function getMinute() {

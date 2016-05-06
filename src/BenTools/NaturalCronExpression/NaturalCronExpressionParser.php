@@ -52,16 +52,16 @@ class NaturalCronExpressionParser {
         
         $string   = strtolower($string);
         $mappings = [
-            '@yearly'   => '0 0 1 1 *',
-            '@annually' => '0 0 1 1 *',
-            '@monthly'  => '0 0 1 * *',
-            '@weekly'   => '0 0 * * 0',
-            '@daily'    => '0 0 * * *',
-            '@hourly'   => '0 * * * *',
+            '@yearly'   => new CronExpression(0, 0, 1, 1, '*'),
+            '@annually' => new CronExpression(0, 0, 1, 1, '*'),
+            '@monthly'  => new CronExpression(0, 0, 1, '*', '*'),
+            '@weekly'   => new CronExpression(0, 0, '*', '*', 0),
+            '@daily'    => new CronExpression(0, 0, '*', '*', '*'),
+            '@hourly'   => new CronExpression(0, '*', '*', '*', '*'),
         ];
 
         if (isset($mappings[$string])) {
-            $string = $mappings[$string];
+            return $mappings[$string];
         }
         
         $expression = new CronExpression();
@@ -74,7 +74,7 @@ class NaturalCronExpressionParser {
 
         /**
          * @param CronExpression $expression
-         * @param ExpressionElementProvider $subParser
+         * @param ExpressionElementProvider $elementProvider
          * @return bool
          */
         $shouldUpdateMinute =  function (CronExpression $expression, ExpressionElementProvider $subParser) use (&$isMinuteElementLocked) {
@@ -84,7 +84,7 @@ class NaturalCronExpressionParser {
 
         /**
          * @param CronExpression $expression
-         * @param ExpressionElementProvider $subParser
+         * @param ExpressionElementProvider $elementProvider
          * @return bool
          */
         $shouldUpdateHour =  function (CronExpression $expression, ExpressionElementProvider $subParser) use (&$isHourElementLocked) {
@@ -94,7 +94,7 @@ class NaturalCronExpressionParser {
 
         /**
          * @param CronExpression $expression
-         * @param ExpressionElementProvider $subParser
+         * @param ExpressionElementProvider $elementProvider
          * @return bool
          */
         $shouldUpdateDayNumber =  function (CronExpression $expression, ExpressionElementProvider $subParser) use (&$isDayNumberElementLocked) {
@@ -104,7 +104,7 @@ class NaturalCronExpressionParser {
 
         /**
          * @param CronExpression $expression
-         * @param ExpressionElementProvider $subParser
+         * @param ExpressionElementProvider $elementProvider
          * @return bool
          */
         $shouldUpdateMonth =  function (CronExpression $expression, ExpressionElementProvider $subParser) use (&$isMonthElementLocked) {
@@ -114,7 +114,7 @@ class NaturalCronExpressionParser {
 
         /**
          * @param CronExpression $expression
-         * @param ExpressionElementProvider $subParser
+         * @param ExpressionElementProvider $elementProvider
          * @return bool
          */
         $shouldUpdateDayOfWeek =  function (CronExpression $expression, ExpressionElementProvider $subParser) use (&$isDayOfWeekElementLocked) {
@@ -122,47 +122,47 @@ class NaturalCronExpressionParser {
                 && !$isDayOfWeekElementLocked;
         };
 
-        foreach ($this->elementProviders AS $subParser) {
+        foreach ($this->elementProviders AS $elementProvider) {
 
-            if ($subParser->matches($string)) {
+            if ($elementProvider->matches($string)) {
 
-                if ($shouldUpdateMinute($expression, $subParser)) {
-                    $expression->setMinute($subParser->getMinuteElement());
+                if ($shouldUpdateMinute($expression, $elementProvider)) {
+                    $expression->setMinute($elementProvider->getMinuteElement());
                 }
 
-                if ($shouldUpdateHour($expression, $subParser)) {
-                    $expression->setHour($subParser->getHourElement());
+                if ($shouldUpdateHour($expression, $elementProvider)) {
+                    $expression->setHour($elementProvider->getHourElement());
                 }
 
-                if ($shouldUpdateDayNumber($expression, $subParser)) {
-                    $expression->setDayNumber($subParser->getDayNumberElement());
+                if ($shouldUpdateDayNumber($expression, $elementProvider)) {
+                    $expression->setDayNumber($elementProvider->getDayNumberElement());
                 }
 
-                if ($shouldUpdateMonth($expression, $subParser)) {
-                    $expression->setMonth($subParser->getMonthElement());
+                if ($shouldUpdateMonth($expression, $elementProvider)) {
+                    $expression->setMonth($elementProvider->getMonthElement());
                 }
 
-                if ($shouldUpdateDayOfWeek($expression, $subParser)) {
-                    $expression->setDayOfWeek($subParser->getDayOfWeekElement());
+                if ($shouldUpdateDayOfWeek($expression, $elementProvider)) {
+                    $expression->setDayOfWeek($elementProvider->getDayOfWeekElement());
                 }
 
-                if ($subParser->isMinuteElementLocked()) {
+                if ($elementProvider->isMinuteElementLocked()) {
                     $isMinuteElementLocked = true;
                 }
 
-                if ($subParser->isHourElementLocked()) {
+                if ($elementProvider->isHourElementLocked()) {
                     $isHourElementLocked = true;
                 }
 
-                if ($subParser->isDayNumberElementLocked()) {
+                if ($elementProvider->isDayNumberElementLocked()) {
                     $isDayNumberElementLocked = true;
                 }
 
-                if ($subParser->isMonthElementLocked()) {
+                if ($elementProvider->isMonthElementLocked()) {
                     $isMonthElementLocked = true;
                 }
 
-                if ($subParser->isDayOfWeekElementLocked()) {
+                if ($elementProvider->isDayOfWeekElementLocked()) {
                     $isDayOfWeekElementLocked = true;
                 }
 
